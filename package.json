@@ -70,7 +70,8 @@
           ]
         }
       ],
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
     },
     "mac": {
       "target": [
