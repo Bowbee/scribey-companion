@@ -182,6 +182,61 @@ For publishing, you'll need:
 
 - `GH_TOKEN`: GitHub token with repo access (automatically provided in GitHub Actions)
 
+## Auto-Updates
+
+The app includes automatic update functionality that checks for new releases on GitHub.
+
+### How Auto-Updates Work
+
+1. **Automatic Checking**: App checks for updates every time it starts (after 3 seconds)
+2. **Background Download**: If an update is available, it downloads in the background
+3. **User Notification**: Shows a dialog asking if user wants to restart to apply update
+4. **Silent Installation**: Updates install when app restarts
+
+### Update Flow
+
+```
+App Start → Check GitHub Releases → Download Update → Notify User → Install on Restart
+```
+
+### Manual Update Check
+
+Users can manually check for updates through the app menu or by using the exposed API:
+
+```javascript
+// In the web interface
+window.companionAPI.updater.checkForUpdates()
+```
+
+### Update Events
+
+The app sends update events to the renderer process:
+
+- `checking-for-update` - Starting update check
+- `update-available` - New version found
+- `update-not-available` - App is up to date
+- `download-progress` - Download progress percentage
+- `update-downloaded` - Ready to install
+- `update-error` - Update check/download failed
+
+### Development vs Production
+
+- **Development**: Auto-updates are disabled
+- **Production**: Auto-updates check against GitHub releases matching your repository
+
+### Update Configuration
+
+Updates are configured in `src/main/main.ts`:
+
+```typescript
+autoUpdater.setFeedURL({
+  provider: 'github',
+  owner: 'Bowbee',
+  repo: 'scribey-companion',
+  private: false
+});
+```
+
 ## Troubleshooting
 
 ### Build Failures

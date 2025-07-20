@@ -1,4 +1,5 @@
 import { app, BrowserWindow, shell, ipcMain, dialog, Menu } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import * as path from 'path';
 import { ConfigManager } from './config-manager';
 import { FileWatcher } from './file-watcher';
@@ -14,6 +15,80 @@ class ScribeyCompanion {
     this.configManager = new ConfigManager();
     this.dataUploader = new DataUploader(this.configManager);
     this.fileWatcher = new FileWatcher(this.configManager, this.dataUploader);
+    
+    // Configure auto-updater
+    this.setupAutoUpdater();
+  }
+
+  private setupAutoUpdater(): void {
+    // Configure updater
+    autoUpdater.checkForUpdatesAndNotify();
+    
+    // Set update feed URL (GitHub releases)
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'Bowbee',
+      repo: 'scribey-companion',
+      private: false
+    });
+
+    // Auto-updater events
+    autoUpdater.on('checking-for-update', () => {
+      console.log('🔍 Checking for updates...');
+      this.sendUpdateMessage('checking-for-update');
+    });
+
+    autoUpdater.on('update-available', (info) => {
+      console.log('🎉 Update available:', info.version);
+      this.sendUpdateMessage('update-available', info);
+    });
+
+    autoUpdater.on('update-not-available', (info) => {
+      console.log('✅ App is up to date:', info.version);
+      this.sendUpdateMessage('update-not-available', info);
+    });
+
+    autoUpdater.on('error', (err) => {
+      console.error('❌ Auto-updater error:', err);
+      this.sendUpdateMessage('update-error', { message: err.message });
+    });
+
+    autoUpdater.on('download-progress', (progressObj) => {
+      console.log(`📥 Download progress: ${Math.round(progressObj.percent)}%`);
+      this.sendUpdateMessage('download-progress', progressObj);
+    });
+
+    autoUpdater.on('update-downloaded', (info) => {
+      console.log('✅ Update downloaded:', info.version);
+      this.sendUpdateMessage('update-downloaded', info);
+      
+      // Show notification to user
+      this.showUpdateNotification(info);
+    });
+  }
+
+  private sendUpdateMessage(event: string, data?: any): void {
+    if (this.mainWindow) {
+      this.mainWindow.webContents.send('updater-message', { event, data });
+    }
+  }
+
+  private showUpdateNotification(info: any): void {
+    if (!this.mainWindow) return;
+
+    const response = dialog.showMessageBoxSync(this.mainWindow, {
+      type: 'info',
+      title: 'Update Available',
+      message: `Scribey Companion v${info.version} is ready to install.`,
+      detail: 'The update will be applied when you restart the app. Would you like to restart now?',
+      buttons: ['Restart Now', 'Later'],
+      defaultId: 0,
+      cancelId: 1
+    });
+
+    if (response === 0) {
+      autoUpdater.quitAndInstall();
+    }
   }
 
   public async initialize(): Promise<void> {
@@ -22,6 +97,11 @@ class ScribeyCompanion {
       this.createWindow();
       this.setupIpcHandlers();
       this.setupMenu();
+      
+      // Check for updates after app is ready
+      setTimeout(() => {
+        autoUpdater.checkForUpdatesAndNotify();
+      }, 3000);
       
       app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -258,6 +338,38 @@ class ScribeyCompanion {
     ipcMain.handle('app:openExternal', async (_, url: string) => {
       const { shell } = await import('electron');
       shell.openExternal(url);
+    });
+
+    // Auto-updater handlers
+    ipcMain.handle('updater:checkForUpdates', async () => {
+      try {
+        const result = await autoUpdater.checkForUpdates();
+        return { success: true, updateInfo: result?.updateInfo };
+      } catch (error) {
+        console.error('Manual update check failed:', error);
+        return { success: false, error: (error as Error).message };
+      }
+    });
+
+    ipcMain.handle('updater:downloadUpdate', async () => {
+      try {
+        await autoUpdater.downloadUpdate();
+        return { success: true };
+      } catch (error) {
+        console.error('Update download failed:', error);
+        return { success: false, error: (error as Error).message };
+      }
+    });
+
+    ipcMain.handle('updater:quitAndInstall', async () => {
+      autoUpdater.quitAndInstall();
+    });
+
+    ipcMain.handle('updater:getUpdateInfo', async () => {
+      return {
+        currentVersion: app.getVersion(),
+        updateAvailable: false // This will be updated by the auto-updater events
+      };
     });
   }
 

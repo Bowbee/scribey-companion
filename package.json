@@ -71,7 +71,8 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "Scribey-Companion-Setup-${version}.exe"
     },
     "mac": {
       "target": [
@@ -83,7 +84,8 @@
           ]
         }
       ],
-      "icon": "assets/icon.icns"
+      "icon": "assets/icon.icns",
+      "artifactName": "Scribey-Companion-${version}-${arch}.dmg"
     },
     "linux": {
       "target": [
@@ -94,7 +96,8 @@
           ]
         }
       ],
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "artifactName": "Scribey-Companion-${version}-${arch}.AppImage"
     },
     "nsis": {
       "oneClick": false,
@@ -108,6 +111,7 @@
     "axios": "^1.6.0",
     "chokidar": "^3.5.3",
     "electron-store": "^8.1.0",
+    "electron-updater": "^6.6.2",
     "glob": "^10.3.10",
     "lua-json": "^1.0.1",
     "luaparse": "^0.3.1",

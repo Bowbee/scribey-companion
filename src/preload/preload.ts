@@ -52,6 +52,14 @@ export interface CompanionAPI {
     checkRegistration(): Promise<{ registered: boolean; error?: string }>;
   };
 
+  // Auto-updater
+  updater: {
+    checkForUpdates(): Promise<{ success: boolean; updateInfo?: any; error?: string }>;
+    downloadUpdate(): Promise<{ success: boolean; error?: string }>;
+    quitAndInstall(): Promise<void>;
+    getUpdateInfo(): Promise<{ currentVersion: string; updateAvailable: boolean }>;
+  };
+
   // Event listeners
   on(channel: string, callback: (...args: any[]) => void): void;
   off(channel: string, callback: (...args: any[]) => void): void;
@@ -103,6 +111,14 @@ const companionAPI: CompanionAPI = {
     checkRegistration: () => ipcRenderer.invoke('device:checkRegistration'),
   },
 
+  // Auto-updater
+  updater: {
+    checkForUpdates: () => ipcRenderer.invoke('updater:checkForUpdates'),
+    downloadUpdate: () => ipcRenderer.invoke('updater:downloadUpdate'),
+    quitAndInstall: () => ipcRenderer.invoke('updater:quitAndInstall'),
+    getUpdateInfo: () => ipcRenderer.invoke('updater:getUpdateInfo'),
+  },
+
   // Event handling
   on: (channel: string, callback: (...args: any[]) => void) => {
     // Validate allowed channels for security
@@ -114,7 +130,8 @@ const companionAPI: CompanionAPI = {
       'upload:error',
       'config:changed',
       'app:focus',
-      'app:blur'
+      'app:blur',
+      'updater-message'
     ];
 
     if (allowedChannels.includes(channel)) {
