@@ -16,7 +16,23 @@
     "start:dev": "cross-env NODE_ENV=development electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "clean": "rimraf dist build"
+    "clean": "rimraf dist build",
+    "build:all": "npm run clean && npm run build && npm run dist:all",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux",
+    "dist:all": "electron-builder --win --mac --linux",
+    "publish:github": "electron-builder --publish always",
+    "publish:draft": "electron-builder --publish never",
+    "release": "npm run build && npm run publish:github",
+    "release:draft": "npm run build && npm run publish:draft",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "preversion": "npm run clean && npm run build",
+    "postversion": "git push && git push --tags",
+    "script:build": "node scripts/build.js",
+    "script:release": "node scripts/release.js"
   },
   "build": {
     "appId": "com.scribey.companion",
@@ -24,6 +40,12 @@
     "directories": {
       "output": "build"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "release"
+      }
+    ],
     "files": [
       "dist/**/*",
       "assets/**/*",

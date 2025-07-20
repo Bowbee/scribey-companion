@@ -92,7 +92,7 @@ The companion app stores its configuration using `electron-store`. Configuration
 
 The app monitors these files for changes:
 ```
-World of Warcraft\_retail_\WTF\Account\[ACCOUNT]\SavedVariables\Scribey.lua
+World of Warcraft\_classic_\WTF\Account\[ACCOUNT]\SavedVariables\Scribey.lua
 ```
 
 When changes are detected, the app:
@@ -237,4 +237,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For support and questions:
 - Visit [scribey.app](https://scribey.app)
 - Check the GitHub issues page
-- Join the Discord community 

@@ -32,6 +32,15 @@ Thumbs.db
 # Electron specific
 *.asar
 
+# Code signing certificates (NEVER commit these!)
+*.p12
+*.pfx
+*.cer
+*.crt
+*.key
+*.pem
+signing/
+
 # TypeScript
 *.tsbuildinfo
 
