@@ -34,6 +34,7 @@ export interface CharacterData {
   cards: CardData[];
   professions: ProfessionData[];
   class: string;
+  level: number;
   lastUpdate: number;
 }
 
@@ -436,6 +437,7 @@ Generated: ${new Date().toISOString()}
                 name: char.name,
                 realm: char.realm,
                 class: char.class,
+                level: char.level,
                 professionCount: char.professions.length,
                 professions: char.professions.map(prof => `${prof.name} (${prof.skillLevel}/${prof.maxSkill})`),
                 cardsCount: char.cards.length
@@ -633,6 +635,7 @@ Generated: ${new Date().toISOString()}
       const characterName = charData.character_name || fullName.split('-')[0];
       const realmName = charData.realm_name || fullName.split('-')[1] || 'Unknown';
       const wowClass = charData.class || 'WARRIOR';
+      const characterLevel = charData.level || 0; // Extract level from addon data
       
       // Parse professions from JSON data
       const professions: ProfessionData[] = [];
@@ -655,6 +658,7 @@ Generated: ${new Date().toISOString()}
         cards: [], // ScribeyDB doesn't have cards data - this is professions/auction data
         professions: professions,
         class: wowClass,
+        level: characterLevel, // Add level to the character object
         lastUpdate: Date.now()
       };
     } catch (error) {

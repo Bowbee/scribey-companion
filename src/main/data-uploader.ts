@@ -184,6 +184,7 @@ export class DataUploader {
         name: char.name,
         realm: char.realm,
         class: char.class, // Include WoW class information
+        level: char.level, // Include character level
         cards: char.cards,
         professions: char.professions,
         lastUpdate: char.lastUpdate
