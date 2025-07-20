@@ -1,6 +1,6 @@
 {
   "name": "scribey-companion",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Scribey Companion App - Monitors WoW addon data and syncs with Scribey web app",
   "main": "dist/main/main.js",
   "homepage": "./",
